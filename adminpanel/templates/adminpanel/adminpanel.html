@@ -1,0 +1,151 @@
+{% extends 'layout.html' %}
+{% block title %}Admin Management{% endblock %}
+{% load customtags %}
+{% block content %} 
+{% if error %}
+<div class="alert alert-dismissible alert-danger">
+    <strong>{{ error }}</strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+</div>
+{% elif success %}
+<div class="alert alert-dismissible alert-success">
+    {{ success }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+</div>
+{% endif %}
+
+<button type="button" class="btn btn-primary btn-rounded" data-toggle="modal" data-target="#modal-2">
+    <i class="fa fa-plus"></i> &nbsp; Add Admin
+</button>
+<hr>
+<h3>
+    <i>Click on a name to view admin logs</i>
+</h3>
+<div class="card">
+    <div class="table-responsive table-sm">
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Steam ID</th>
+                    <th>Flags</th>
+                    <th>Immunity</th>
+                    {% if request.user|has_group:"HeadAdmins" %}
+                    <th class="text-nowrap">SB username</th>
+                    <th>SB password</th>
+                    {% endif %}
+                    <th>Kicks</th>
+                    <th>Bans</th>
+                    <th>Map Changes</th>
+                    <th>sm_chat</th>
+                    <th>sm_say</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in results %}
+                <tr>
+                    <td class="text-nowrap">
+                        <a style="color: #0275d8" href="{% url 'adminlogs' i.id %}">{{ i.name }}</a>
+                    </td>
+                    <td>{{ i.steamid }}</td>
+                    <td>{{ i.flags }}</td>
+                    <td>{{ i.immunity }}</td>
+                    {% if request.user|has_group:"HeadAdmins" %}
+                    <td>{{ i.ht_name }}</td>
+                    <td>{{ i.ht_passwd }}</td>
+                    {% endif %}
+                    <td>{{ i.kicks }}</td>
+                    <td>{{ i.bans }}</td>
+                    <td>{{ i.map_changes }}</td>
+                    <td>{{ i.sm_chats }}</td>
+                    <td>{{ i.sm_says }}</td>
+                    <td>
+                        <button data-id="{{ i.steamid }}" data-name="{{ i.name }}" type="button" class="btn btn-danger btn-rounded btn-sm" data-toggle="modal"
+                            data-target="#modal-3">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- begin modal add admin -->
+<div class="modal fade" id="modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Amin</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="loading-add">
+                    <br>
+                    <span class="loading-text">Adding admin to all servers...please wait...</span>
+                </div>
+
+                <div id="content-add">
+                    <form action="{% url 'add' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="steamid-add" class="require">Steam ID</label>
+                            <input type="text" id="steamid-add" name="steamid" class="form-control" placeholder="STEAM_X:X:XXXXXXXX">
+                            <label for="nickname-add" class="require">Name</label>
+                            <input type="text" id="nickname-add" name="nickname" class="form-control">
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+                <button type="submit" name="submit" class="btn btn-primary" onclick="loadingAdd();">Add Admin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- begin modal remove admin -->
+<div class="modal fade" id="modal-3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger border-0">
+                <h5 class="modal-title text-white">Delete Admin</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body p-5">
+                <div id="loading-remove">
+                    <br>
+                    <span class="loading-text">Removing admin from all servers...please wait...</span>
+                </div>
+                <div id="content-remove">
+                    <form action="{% url 'remove' %}" method="post">
+                        {% csrf_token %}
+                        <div class="alert alert-danger">Are you sure you want to remove this admin?</div>
+                        <br />
+                        <div class="form-group">
+                            <label for="name-remove" class="form-control-label">Name</label>
+                            <input id="name-remove" class="form-control" name="remove-name" value="" readonly="">
+                            <label for="steamid-remove" class="form-control-label">Steam ID</label>
+                            <input id="steamid-remove" class="form-control" name="remove-steamid" value="" readonly="">
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+                <button type="submit" name="submit" class="btn btn-danger" onclick="loadingRemove();">Remove</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

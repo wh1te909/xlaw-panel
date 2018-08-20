@@ -1,0 +1,7 @@
+{% extends 'layout.html' %}
+{% block title %}Logs - {{ admin.name }}{% endblock %}
+{% load customtags %}
+{% block content %}
+{{ admin.name }} <br />
+<pre>{{ text }}</pre>
+{% endblock %}

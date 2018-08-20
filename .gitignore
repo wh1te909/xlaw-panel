@@ -1,0 +1,12 @@
+*.log
+*.pot
+*.pyc
+*.pid
+__pycache__/
+local_settings.py
+secret_cron.py
+db.sqlite3
+media/
+admin_files/
+static/
+.htpasswd

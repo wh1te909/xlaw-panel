@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+{% block title %}X-Law Parser{% endblock %}
+{% load humanize %}
+{% load customtags %}
+{% block content %}
+<h3 class="title"><b>Alt Finder</b></h3>
+<p class="info">Current database entries: {{ total|intcomma }}</p>
+<hr><br>
+<p class="info">Enter a steam community link, steamid or IP address</p>
+
+{% if error %}
+    <div class="alert alert-danger" role="alert">
+        <strong><pre class="pre">{{ error }}</pre></strong>
+        <a class="btn" href="{% url 'parser' %}" role="button">
+            <button class="btn btn-warning button" value="Reset">Reset</button>
+        </a>
+    </div>
+{% endif %}
+
+<div id="loading-results"><br><span class="loading-text">Searching database...please wait...</span></div>
+<div id="content-results">
+    <form class="forma" action="{% url 'parser' %}" method="post">
+        {% csrf_token %}
+
+        <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Search</i></span>
+                </div>
+                <input type="text" class="form-control" name="query" placeholder="...">
+                <div class="input-group-btn">
+                    <select class="btn btn-secondary dropdown-toggle" name="type">
+                        <option value="alt">Alt accounts</option>
+                        <option value="ipaddr">IP adresses</option>
+                    </select>
+                </div>
+        </div>
+
+        <input type="submit" class="btn btn-success button btn-block" name="submit" value="Search" onclick="loadingResults();">
+    </form>
+</div>
+{% if request.method == 'POST' %}
+    {% if q %}
+        <hr>
+        <h4>Results:</h4>
+        <table class="table">
+            <thead class="thead-inverse thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>SteamID</th>
+                    <th>IP</th>
+                    <th>Connections</th>
+                    <th>Last Connected</th>
+                    <th>VAC</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if results %}
+                    {% for i in results %}
+                        {% if vacs|get_item:i.steamid %}
+                            <tr class="table-danger">
+                        {% else %}
+                            <tr>
+                        {% endif %}
+                                <td><img src="{{ icons|get_item:i.steamid }}"/></td>
+                                <td><a style="color: #0275d8" href="http://steamcommunity.com/profiles/{% convert_64 i.steamid %}">{{ names|get_item:i.steamid }}</a></td>
+                                <td>{{ i.steamid }}</td>
+                                {% if request.user|has_group:"HeadAdmins" %} 
+                                    <td>{{ i.ip }}</td>
+                                {% else %}
+                                    <td>Hidden</td>
+                                {% endif %}
+                                <td>{{ i.connections }}</td>
+                                <td>{{ i.lastupdated|date:"N j Y" }}</td>
+                                {% if vacs|get_item:i.steamid %}
+                                    <td><span style="color:red"><b>VAC</b></span></td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endif %}
+{% endblock %}

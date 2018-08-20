@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+{% block title %}Player Stats{% endblock %}
+{% load humanize %}
+{% block content %}
+<h3 class="title">
+    <b>Stats</b>
+</h3>
+<hr>
+<p class="info">Enter a steam community link or steamid </p>
+
+{% if error %}
+<div class="alert alert-danger" role="alert">
+    <strong>
+        <pre class="pre">{{ error }}</pre>
+    </strong>
+    <a class="btn" href="{% url 'stats' %}" role="button">
+        <button class="btn btn-warning button" value="Reset">Reset</button>
+    </a>
+</div>
+{% endif %}
+
+<form class="forma" action="{% url 'stats' %}" method="post">
+    {% csrf_token %}
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Search</i>
+            </span>
+        </div>
+        <input type="text" class="form-control" name="statsquery" placeholder="...">
+    </div>
+
+    <input type="submit" class="btn btn-success button btn-block" name="submit" value="Search">
+</form>
+
+{% if request.method == 'POST' %}
+{% if not error %}
+<br />
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header border border-top-0 border-right-0 border-left-0">
+                <img src="{{ picture }}" /> <a style="color: #0275d8" href="{{ steam_profile }}">{{ player_name }}</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Steam ID</th>
+                                    <th>Connections</th>
+                                    <th>Total Hours</th>
+                                    <th>Location</th>
+                                    <th>Top Map</th>
+                                    <th>Top Server</th>
+                                    <th>Flags</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ steamid2 }}</td>
+                                    <td>{{ connections|intcomma }}</td>
+                                    <td>{{ playtime }}</td>
+                                    <td>{{ city.city}}, {{ region.region }}, {{ country.country }}</td>
+                                    {% for x in top_map %}
+                                        <td>{{ x.map }}</td>
+                                    {% endfor %}
+                                    {% for y in top_server %}
+                                        <td>{{ y.server_ip }}</td>
+                                    {% endfor %}
+                                    <td>{{ flags.flags }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div> 
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

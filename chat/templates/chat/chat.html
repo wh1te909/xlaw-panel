@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% block title %}X-Law Chat Logs{% endblock %}
+{% load chattags %}
+{% load humanize %}
+{% block content %}
+<h3 class="title"><b>Chat Search</b></h3>
+<hr>
+<p class="info">Enter a steam community link or steamid </p>
+
+{% if error %}
+<div class="alert alert-danger" role="alert">
+    <strong><pre class="pre">{{ error }}</pre></strong>
+    <a class="btn" href="{% url 'chat' %}" role="button">
+        <button class="btn btn-warning button" value="Reset">Reset</button>
+    </a>
+</div>
+{% endif %}
+
+<form class="forma" action="{% url 'chat' %}" method="post">
+{% csrf_token %}
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Search</i></span>
+        </div>
+        <input type="text" class="form-control" name="chatquery" placeholder="...">
+    </div>
+
+    <input type="submit" class="btn btn-success button btn-block" name="submit" value="Search">
+</form>
+
+{% if request.method == 'POST' %}
+    {% if steamid2 %}
+        <br />
+        <h4>Chat history for {{ steamid2 }}</h4>
+        {% for i in results %}
+        {{ i.srvid|get_server }} {{ i.date|date:"N-j-Y P" }} {{ i.name }}: <strong><i>{{ i.text }}</i></strong><br />
+        {% endfor %}
+    {% endif %}
+{% endif %}
+{% endblock %}
+
