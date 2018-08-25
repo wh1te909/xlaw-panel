@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # secret key in local_settings.py
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['10.0.30.131', 'localhost', 'admin.xlawgaming.com']
+ALLOWED_HOSTS = ['localhost', 'admin.xlawgaming.com']
 
 
 # Application definition
