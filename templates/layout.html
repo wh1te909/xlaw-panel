@@ -9,6 +9,7 @@
     <link rel="icon" href="{% static 'imgs/favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'vendor/simple-line-icons/css/simple-line-icons.css' %}">
     <link rel="stylesheet" href="{% static 'vendor/font-awesome/css/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles123.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
@@ -98,5 +99,24 @@
 <script src="{% static 'js/carbon.js' %}"></script>
 <script src="{% static 'js/demo.js' %}"></script>
 <script src="{% static 'js/xlaw.js' %}"></script>
+<script>
+    $(document).ready(function () {
+            $('#modal-3').on('shown.bs.modal', function (e) {
+                var steamid = $(e.relatedTarget).data('id');
+                var adminname = $(e.relatedTarget).data('name');
+
+                $("#steamid-remove").val(steamid);
+                $("#name-remove").val(adminname);
+            });
+
+            $('#deletevip').on('shown.bs.modal', function (e) {
+                var steamid = $(e.relatedTarget).data('id');
+                var adminname = $(e.relatedTarget).data('name');
+
+                $("#steamid-remove-vip").val(steamid);
+                $("#name-remove-vip").val(adminname);
+            });
+        });
+</script>
 </body>
 </html>

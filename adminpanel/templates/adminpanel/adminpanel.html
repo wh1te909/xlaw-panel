@@ -18,9 +18,18 @@
 </div>
 {% endif %}
 
-<button type="button" class="btn btn-primary btn-rounded" data-toggle="modal" data-target="#modal-2">
-    <i class="fa fa-plus"></i> &nbsp; Add Admin
-</button>
+<div class="mb-4">
+    <button type="button" class="btn btn-primary btn-rounded" data-toggle="modal" data-target="#modal-2">
+        <i class="fa fa-plus"></i> &nbsp; Add Admin
+    </button>
+    <button type="button" class="btn btn-success btn-rounded" data-toggle="modal" data-target="#addvip">
+        <i class="fa fa-plus"></i> &nbsp; Add VIP
+    </button>
+    <a href="#viewvip"  class="btn btn-warning btn-sm">
+        View VIP's
+    </a>
+</div>
+
 <hr>
 <h3>
     <i>Click on a name to view admin logs</i>
@@ -76,6 +85,43 @@
         </table>
     </div>
 </div>
+<hr>
+<!-- vips -->
+<h1>VIP'S</h1>
+<div class="col-md-6">
+<div class="card" id="viewvip">
+    <div class="table-responsive table-sm">
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Steam ID</th>
+                    <th>Flags</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in vips %}
+                <tr>
+                    <td class="text-nowrap">
+                        {{ i.name }}
+                    </td>
+                    <td>{{ i.steamid }}</td>
+                    <td>{{ i.flags }}</td>
+                    <td>
+                        <button data-id="{{ i.steamid }}" data-name="{{ i.name }}" type="button"
+                            class="btn btn-danger btn-rounded btn-sm" data-toggle="modal" data-target="#deletevip">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
 
 <!-- begin modal add admin -->
 <div class="modal fade" id="modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -101,12 +147,56 @@
                             <input type="text" id="steamid-add" name="steamid" class="form-control" placeholder="STEAM_X:X:XXXXXXXX">
                             <label for="nickname-add" class="require">Name</label>
                             <input type="text" id="nickname-add" name="nickname" class="form-control">
+                            <br>
+                            <div class="toggle-switch" data-ts-color="info">
+                                <label for="vipadmin" class="ts-label">VIP</label>
+                                <input id="vipadmin" name="vip-admin" type="checkbox" hidden="hidden">
+                                <label for="vipadmin" class="ts-helper"></label>
+                            </div>
                         </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
                 <button type="submit" name="submit" class="btn btn-primary" onclick="loadingAdd();">Add Admin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- add vip modal -->
+<div class="modal fade" id="addvip" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add VIP</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="loading-add">
+                    <br>
+                    <span class="loading-text">Adding VIP to all servers...please wait...</span>
+                </div>
+
+                <div id="content-add">
+                    <form action="{% url 'addvip' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="steamid-add-vip" class="require">Steam ID</label>
+                            <input type="text" id="steamid-add-vip" name="steamid-vip" class="form-control"
+                                placeholder="STEAM_X:X:XXXXXXXX">
+                            <label for="nickname-add-vip" class="require">Name</label>
+                            <input type="text" id="nickname-add-vip" name="nickname-vip" class="form-control">
+                            <br>
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+                <button type="submit" name="submit" class="btn btn-success" onclick="loadingAdd();">Add VIP</button>
                 </form>
             </div>
         </div>
@@ -137,6 +227,43 @@
                             <input id="name-remove" class="form-control" name="remove-name" value="" readonly="">
                             <label for="steamid-remove" class="form-control-label">Steam ID</label>
                             <input id="steamid-remove" class="form-control" name="remove-steamid" value="" readonly="">
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+                <button type="submit" name="submit" class="btn btn-danger" onclick="loadingRemove();">Remove</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- vip remove modal -->
+<div class="modal fade" id="deletevip" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger border-0">
+                <h5 class="modal-title text-white">Delete VIP</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body p-5">
+                <div id="loading-remove">
+                    <br>
+                    <span class="loading-text">Removing VIP from all servers...please wait...</span>
+                </div>
+                <div id="content-remove">
+                    <form action="{% url 'removevip' %}" method="post">
+                        {% csrf_token %}
+                        <div class="alert alert-danger">Are you sure you want to remove this VIP?</div>
+                        <br />
+                        <div class="form-group">
+                            <label for="name-remove-vip" class="form-control-label">Name</label>
+                            <input id="name-remove-vip" class="form-control" name="remove-name-vip" value="" readonly="">
+                            <label for="steamid-remove-vip" class="form-control-label">Steam ID</label>
+                            <input id="steamid-remove-vip" class="form-control" name="remove-steamid-vip" value="" readonly="">
                         </div>
                 </div>
             </div>
