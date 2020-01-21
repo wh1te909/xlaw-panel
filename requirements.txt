@@ -26,7 +26,7 @@ sqlparse==0.3.0
 steam==0.9.0
 urllib3==1.24.1
 uWSGI==2.0.18
-validators==0.12.4
+validators==0.12.6
 vdf==3.0
 vine==1.3.0
 xmltodict==0.12.0
